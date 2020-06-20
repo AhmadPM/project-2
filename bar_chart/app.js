@@ -6,8 +6,8 @@ var svgHeight = 700;
 var chartMargin = {
   top: 15,
   right: 25,
-  bottom: 15,
-  left: 60
+  bottom: 25,
+  left: 100
 };
 
 // Define dimensions of the chart area
@@ -24,7 +24,7 @@ var svg = d3.select("body")
 var chartGroup = svg.append("g")
   .attr("transform", `translate(${chartMargin.left}, ${chartMargin.top})`);
 
-d3.csv("satellite.csv")
+d3.csv("data/satellite.csv")
   .then(function (satelliteData) {
 
     var countCountry = {};
@@ -81,7 +81,6 @@ d3.csv("satellite.csv")
     var top20 = sliced.map(data => d3.map(data).entries());
     console.log(top20);
 
-
       //Configure a band scale for the horizontal axis with a padding of 0.1 (10%)
 
       var xLinearScale = d3.scaleLinear()
@@ -90,10 +89,12 @@ d3.csv("satellite.csv")
         // console.log(xLinearScale);
       // Create a linear scale for the vertical axis.
       // NOTE: d3.max(tvData, d => d.hours) = d3.max(tvData.map(d => d.hours))
+      var test = top20.map(d => d[0].key);
+      console.log(test);
       var yScaleBand = d3.scaleBand()
-        .domain([0, d3.map(top20, d => d[0].key)])
-        .range([chartHeight, 0])
-        .padding(0.1); // reversed range
+        .domain(top20.map(d => d[0].key))
+        .range([0, chartHeight])
+        .padding(0.2); // reversed range
 
       // Create two new functions passing our scales in as arguments
       // These will be used to create the chart's axes
@@ -112,16 +113,24 @@ d3.csv("satellite.csv")
 
     // Create one SVG rectangle per piece of tvData
     // Use the linear and band scales to position each rectangle within the chart
-    chartGroup.selectAll(".bar")
+     var bars = chartGroup.selectAll(".bar")
       .data(top20)
       .enter()
       .append("rect")
       .attr("class", "bar")
-      .attr("x", d => xLinearScale(d[0].value))
+      .attr("x", 0)
       .attr("y", d => yScaleBand(d[0].key))
-      .attr("width", function (d) {
-        return chartWidth - xLinearScale(d[0].value)})
+      .attr("width", d => xLinearScale(d[0].value))
       .attr("height", yScaleBand.bandwidth());
+
+      //add a value label to the right of each bar
+    bars.append("text")
+      .attr("class", "label")
+      //y position of the label is halfway down the bar
+      .attr("y", d => yScaleBand(d[0].key) + y.bandwidth() / 2 + 4);
+      .attr("x", d => d.xLinearScale + 3);
+      .text(d => xLinearScale(d[0].value);
+
 
   }).catch(function (error) {
     console.log(error);

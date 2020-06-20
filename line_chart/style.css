@@ -1,6 +1,6 @@
 .line {
   fill: none;
-  stroke-width: 2px;
+  stroke-width: 4px;
 }
 
 .orange {
@@ -9,4 +9,13 @@
 
 .green {
   stroke: green;
+}
+
+.blue {
+  stroke: blue;
+}
+
+
+.red {
+  stroke: red;
 }
